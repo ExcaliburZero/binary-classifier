@@ -48,7 +48,7 @@ class EmulatorMain(object):
                 initialBrightness = initialBrightness + variance
             else:
                 initialBrightness = initialBrightness - variance
-            timeTaken = timeTaken = timeInterval;
+            timeTaken = timeTaken + timeInterval;
             p = point(timeTaken, (initialBrightness + createError()))            
             finalObject.append(p)
             
