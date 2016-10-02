@@ -18,6 +18,7 @@ install:
   - source activate test-environment
   - conda install anaconda-client
   - conda config --add channels conda-forge
+  - conda config --add channels bioconda
 
 script:
   # Attempt to build and install the library
