@@ -1,4 +1,5 @@
 from binaryclassifier import EmulatorMain
+import random #ADDED TO USE RANDINT()~~~~~~~~~~
 
 class Classifier (object): 
 
@@ -8,70 +9,51 @@ class Classifier (object):
 #Also, much of this is tip-toeing around the fact that I did not have the NumPy package at the time of writing
 #I recommend that we all get it here: http://www.scipy.org/scipylib/download.html
 #For the actual classifier I would like to use this to implement more precise (i.e. calculus-based) methods.
-
-	def SlopeList(self):
+    def SlopeList(self):
 
 #Generate data using CVC's data generator. For this prototype, randomly pass in a value of true or false
-		em = EmulatorMain.EmulatorMain()
+        em = EmulatorMain.EmulatorMain()
 
 #generate an array of observations
-		if random.rantint(0, 10) < 5:
-			obsArray= em.generateSingleObject(True)
-		else: 
-			obsArray = em.generateSingleObject(False)
-
+        obsArray = [] #ADDED FOR CLARIY~~~~~~
+        if random.randint(0, 10) < 5: #SPELLING ERROR~~~~
+	       obsArray= em.generateSingleObject(True)
+        else: 
+	       obsArray = em.generateSingleObject(False)
 
 #Gather many slopes within the time series into an array of slopes.
-		i = 0
-		slopeList = []
-		for x, y in enumerate(obsArray):
-			i = i+1
-
-			if i == len(obsArray):
-				break
-
-			(x2, y2) = obsArray[i]
-			try:
-				slopeList.append((float(y2)-y1)/(float(x2)-x1))
-			except ZeroDivisionError:
-				break
+        i = 0
+        slopeList = []
+        
+        for x, y in enumerate(obsArray):
+            i = i+1
+            if i == len(obsArray):
+                break
+            (x2, y2) = obsArray[i]
+            try: #!!!!!!!!!!!!!LINE BELOW IS THE ONLY LINE THAT WILL STILL GENERATE AN ERROR, DONT KNOW WHAT ITS SUPPOSED TO DO~~~~
+                slopeList.append((float(y2)-y1)/(float(x2)-x1)) #X1 AND Y1 AREN'T DEFINED? DON'T KNOW WHAT THEY ARE THERE FOR~~~~
+            except ZeroDivisionError:
+                break
         	# line is vertical
-
-		return slopeList
-
+            return slopeList
 
 #This means to take an average slope of the transient
 #by iterating through the list of slopes.
 #It will then classify the data as a transient if the discernable slope exceeds a particular margin of error 
-	def finalClassification(self):
-
-		sum = 0
-		slopeList = SlopeList()
-		for i in slopeList:
-			sum = sum + slopeList[i]
-
-
-			averageSlope = sum / len(slopeList)
-
-
-			error = createError()
-
-			if averageSlope > error:
-				isTransient = false
-			else:
-				isTransient = true
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        def finalClassification(self):
+            sum = 0
+            slopeList = self.SlopeList() #FIXED UNDEFINED NAME~~~~~
+            
+            for i in slopeList:
+                sum = sum + slopeList[i]
+                averageSlope = sum / len(slopeList)
+                error = self.createError() #FIEXED UNDEFINED NAME~~~~~~~
+                if averageSlope > error:
+                    isTransient = False #FIXED false TO False~~~~~
+                else:
+                    isTransient = True #SAME PROBLEM AS ABOVE~~~~~~
+            return isTransient #ADDED RETURN STATEMENT~~~~~~~
+        
+                         
+cC = Classifier()
+cC.SlopeList()
