@@ -22,37 +22,37 @@ class Classifier (object):
 	       obsArray = em.generateSingleObject(False)
 
 #Gather many slopes within the time series into an array of slopes.
-        i = 0
         slopeList = []
         
-        for x, y in enumerate(obsArray):
-            i = i+1
-            if i == len(obsArray):
-                break
-            (x2, y2) = obsArray[i]
+        #for x, y in enumerate(obsArray):
+        (x2, y2) = obsArray[0]
+        for obs in obsArray[1:]:
+            x1 = x2
+            y1 = y2
+            (x2, y2) = obs
             try: #!!!!!!!!!!!!!LINE BELOW IS THE ONLY LINE THAT WILL STILL GENERATE AN ERROR, DONT KNOW WHAT ITS SUPPOSED TO DO~~~~
                 slopeList.append((float(y2)-y1)/(float(x2)-x1)) #X1 AND Y1 AREN'T DEFINED? DON'T KNOW WHAT THEY ARE THERE FOR~~~~
             except ZeroDivisionError:
                 break
         	# line is vertical
-            return slopeList
+        return slopeList
 
 #This means to take an average slope of the transient
 #by iterating through the list of slopes.
 #It will then classify the data as a transient if the discernable slope exceeds a particular margin of error 
-        def finalClassification(self):
-            sum = 0
-            slopeList = self.SlopeList() #FIXED UNDEFINED NAME~~~~~
-            
-            for i in slopeList:
-                sum = sum + slopeList[i]
-                averageSlope = sum / len(slopeList)
-                error = self.createError() #FIEXED UNDEFINED NAME~~~~~~~
-                if averageSlope > error:
-                    isTransient = False #FIXED false TO False~~~~~
-                else:
-                    isTransient = True #SAME PROBLEM AS ABOVE~~~~~~
-            return isTransient #ADDED RETURN STATEMENT~~~~~~~
+    def finalClassification(self):
+        sum = 0
+        slopeList = self.SlopeList() #FIXED UNDEFINED NAME~~~~~
+        
+        for i in slopeList:
+            sum = sum + i
+            averageSlope = sum / len(slopeList)
+            error = EmulatorMain.createError() #FIEXED UNDEFINED NAME~~~~~~~
+            if abs(averageSlope) > error:
+                isTransient = False #FIXED false TO False~~~~~
+            else:
+                isTransient = True #SAME PROBLEM AS ABOVE~~~~~~
+        return isTransient #ADDED RETURN STATEMENT~~~~~~~
         
                          
 cC = Classifier()
