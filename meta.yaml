@@ -17,10 +17,10 @@ requirements:
 test:
   requires:
     - nose
-    - hypothesis >=3.0.0
 
   files:
     - tests/test_EmulatorMain.py
+    - tests/test_main.py
 
 about:
   home: https://github.com/CSC380Team8/binary-classifier
