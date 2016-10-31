@@ -6,15 +6,52 @@ import SimpleClassifier
 
 import cli.app
 
+
 @cli.app.CommandLineApp
 def main(app):
-    """Generates test data, categorizes the data into transient types, and
-    print out the results."""
-    print "Generating test transient data..."
+    """
+    Generates test data, categorizes the data into transient types, and
+    prints out the results.
+    """
 
     # Decide on the number of transients and non transient to generate
-    number_transients = app.params.number / 2
-    number_non_transients = app.params.number - number_transients
+    total_objects = app.params.number
+    number_transients = total_objects / 2
+    number_non_transients = total_objects - number_transients
+
+    if app.params.verbose:
+        main_verbose(number_transients, number_non_transients)
+    else:
+        main_simple(number_transients, number_non_transients)
+
+
+def main_simple(number_transients, number_non_transients):
+    emulator = EmulatorMain.EmulatorMain()
+
+    # Analyze the transients
+    correct_transients = 0
+    for _ in range(0, number_transients):
+        transient = emulator.generateSingleObject(True)
+        results = SimpleClassifier.classify_simple(transient)
+        if results:
+            correct_transients += 1
+    print "Transients:     " + str(correct_transients) + " / " + str(number_transients)
+
+    # Analyze the non-transients
+    correct_non_transients = 0
+    for _ in range(0, number_non_transients):
+        non_transient = emulator.generateSingleObject(False)
+        results = SimpleClassifier.classify_simple(non_transient)
+        if not results:
+            correct_non_transients += 1
+        else:
+            print non_transient
+
+    print "Non-Transients: " + str(correct_non_transients) + " / " + str(number_non_transients)
+
+
+def main_verbose(number_transients, number_non_transients):
+    print "Generating test transient data..."
 
     # Generate the test data
     emulator = EmulatorMain.EmulatorMain()
@@ -41,6 +78,7 @@ def main(app):
     for non_transient in non_transient_strings:
         print non_transient
 
+
 def transient_to_string(isTransient, transient):
     """
     Prints out information about the given possible transient.
@@ -61,8 +99,10 @@ def transient_to_string(isTransient, transient):
 
     return "----------\n" + str(light_curve) + "\n" + str(category) + "\n"
 
+
 # CLI options
 main.add_param("number", help="set number of test transients", type=int)
+main.add_param("-v", "--verbose", default=0, action="count", help="output all observation data and results")
 
 # Run main function
 if __name__ == "__main__":
