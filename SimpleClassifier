@@ -1,0 +1,88 @@
+from binaryclassifier import EmulatorMain
+import random
+
+class Classifier (object): 
+
+#At the moment this has dumb bugs (scope errors, etc) related to my newness at Python. 
+#Let's get together and debug them and everyone else's code too!
+
+#Also, much of this is tip-toeing around the fact that I did not have the NumPy package at the time of writing
+#I recommend that we all get it here: http://www.scipy.org/scipylib/download.html
+#For the actual classifier I would like to use this to implement more precise (i.e. calculus-based) methods.
+
+    lastGeneratedWasTransient = False #Testing purpose variable
+    
+    def getTest():
+        """
+        Method for testing correctness
+        """
+        global lastGeneratedWasTransient
+        return lastGeneratedWasTransient
+
+    def SlopeList(self):
+
+#Generate data using CVC's data generator. For this prototype, randomly pass in a value of true or false
+        em = EmulatorMain.EmulatorMain()
+
+#generate an array of observations
+        obsArray = []
+        global lastGeneratedWasTransient
+        
+        if random.randint(0, 10) < 5: 
+            print "Generated a transient"
+            obsArray= em.generateSingleObject(True)
+            lastGeneratedWasTransient = True
+        else: 
+            print "Generated a non-transient"
+            obsArray = em.generateSingleObject(False)
+            lastGeneratedWasTransient = False
+
+#Gather many slopes within the time series into an array of slopes.
+        slopeList = []
+        
+        #for x, y in enumerate(obsArray):
+        for obs in obsArray:
+            (x2, y2) = obs
+            slopeList.append(y2)
+        return slopeList
+
+#This means to take an average slope of the transient
+#by iterating through the list of slopes.
+#It will then classify the data as a transient if the discernable slope exceeds a particular margin of error 
+    def finalClassification(self):
+        sum = 0
+        high = 0
+        low = 102 # 100 is max value the test data can generate
+        slopeList = self.SlopeList()
+        
+        for i in slopeList:
+            sum = sum + i
+            i
+            
+        averageSlope = sum / len(slopeList)    
+        errorAccountLow = averageSlope - .07
+        errorAccountHigh = averageSlope  + .07
+        for i in slopeList:
+            if i > high:
+                high = i
+            if i < low:
+                low = i
+            if (i < errorAccountLow) or (i > errorAccountHigh):
+                return True
+        if (high > errorAccountHigh) or (low < errorAccountLow):
+            return True
+        else:
+            return False
+
+
+"""
+code to check the accuracy and print it out:
+"""
+biClass = Classifier()
+t = biClass.finalClassification()
+if t == False and lastGeneratedWasTransient == False:
+    print "Determined that this object was not a transient correctly"
+elif t == True and lastGeneratedWasTransient == True:
+    print "Determined that this object was a transient correctly"
+else: 
+    print "Incorrectly Determined this object"
