@@ -19,6 +19,7 @@ test:
     - nose
 
   files:
+    - binaryclassifier
     - tests/test_EmulatorMain.py
     - tests/test_main.py
 
