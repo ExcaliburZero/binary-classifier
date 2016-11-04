@@ -37,17 +37,20 @@ def classify_simple(observations):
 
     for i in slopeList:
         sum = sum + i
-
+    
+    errorAccount = False
     averageSlope = sum / len(slopeList)
-    errorAccountLow = averageSlope - .08
-    errorAccountHigh = averageSlope + .08
+    errorAccountLow = averageSlope - (averageSlope * .06)
+    errorAccountHigh = averageSlope + (averageSlope * .06)
     for i in slopeList:
         if i > high:
             high = i
         if i < low:
             low = i
-        if (i < errorAccountLow) or (i > errorAccountHigh):
+        if (i < errorAccountLow) or (i > errorAccountHigh) and (errorAccount == True):
             return True
+        else:
+            errorAccount = True
     if (high > errorAccountHigh) or (low < errorAccountLow):
         return True
     else:
