@@ -8,20 +8,23 @@ source:
 requirements:
   build:
     - python
+    - numpy
     - setuptools ==27.2.0
 
   run:
     - python
+    - numpy
     - pycli
 
 test:
   requires:
+    - python
+    - numpy
     - nose
 
   files:
     - binaryclassifier
-    - tests/test_EmulatorMain.py
-    - tests/test_main.py
+    - tests
 
 about:
   home: https://github.com/CSC380Team8/binary-classifier

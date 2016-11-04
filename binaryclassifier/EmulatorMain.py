@@ -7,9 +7,14 @@ Discovery rate ~ 1 transient per 10^6 sources detected per epoch So, transient d
 
 Each object contains a semi-random number of observations (2-10). Observations come in tuples of (time (seconds), light (no idea)). 
 Objects are arrays of these tuples where the first index is the first observation taken.
+
+added normally distributed error instead of random error between +-5%.
+right now the error has a mean of (lightvalue) and a standard deviation of (lightvalue*.05)
+this means roughly 68% of light values will be +-5%, while 32% will be more extreme outliers 
 """
 
 from collections import namedtuple
+import numpy.random
 import random
 
 class EmulatorMain(object):
@@ -36,7 +41,7 @@ class EmulatorMain(object):
             point = namedtuple('Observation' + str(x), ['time', 'light'])
             if isTransient == False:
                 timeTaken = timeTaken + timeInterval
-                p = point(timeTaken, (initialBrightness + createError()))
+                p = point(timeTaken, (initialBrightness + createError(initialBrightness)))
                 finalObject.append(p)
                 continue
             if hasSlopeChanged == False:
@@ -49,7 +54,7 @@ class EmulatorMain(object):
             else:
                 initialBrightness = initialBrightness - variance
             timeTaken = timeTaken + timeInterval;
-            p = point(timeTaken, (initialBrightness + createError()))            
+            p = point(timeTaken, (initialBrightness + createError(initialBrightness)))            
             finalObject.append(p)
             
         return finalObject
@@ -61,15 +66,11 @@ class EmulatorMain(object):
         Returns ? Do we even need this?
         """
       
-def createError():
-    # Error between -5%-5% of value passsed in (random)
-    observationalError = random.randint(-5, 5)
-    observationalError = observationalError * .01
+def createError(light):
+    #Normally distributed error
+    s = numpy.random.normal(light, abs(light * .02) + .0001) #about 68% of values will be within +-.02*light
+    if random.getrandbits(1) == True:
+        observationalError = -s
+    else:
+        observationalError = s
     return observationalError
-
-"""#CODE TO PRINT OUT OBSERVATIONS OF A SINGLE OBJECT
-a = EmulatorMain()
-h = a.generateSingleObject(True)
-for a in h:
-    print a
-"""
